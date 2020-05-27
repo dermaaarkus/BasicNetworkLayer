@@ -2,6 +2,4 @@ import XCTest
 
 import BasicNetworkLayerTests
 
-var tests = [XCTestCaseEntry]()
-tests += BasicNetworkLayerTests.allTests()
-XCTMain(tests)
+fatalError("Running tests like this is unsupported. Run the tests again by using `swift test --enable-test-discovery`")

@@ -5,15 +5,19 @@ import PackageDescription
 
 let package = Package(
     name: "BasicNetworkLayer",
+    platforms: [
+        .iOS(.v11),
+    ],
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
             name: "BasicNetworkLayer",
-            targets: ["BasicNetworkLayer"]),
+            targets: ["BasicNetworkLayer"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
+        .package(url: "https://github.com/AliSoftware/OHHTTPStubs", from: "9.0.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -23,6 +27,7 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "BasicNetworkLayerTests",
-            dependencies: ["BasicNetworkLayer"]),
+            dependencies: ["BasicNetworkLayer",
+                           .product(name: "OHHTTPStubsSwift", package: "OHHTTPStubs")]),
     ]
 )
