@@ -21,7 +21,7 @@ public final class Webservice {
     
     private var session: URLSession
     
-    convenience init() {
+    public convenience init() {
         let session = URLSession(configuration: .default,
                           delegate: nil,
                           delegateQueue: nil)
@@ -29,7 +29,7 @@ public final class Webservice {
         self.init(session: session)
     }
     
-    init(session: URLSession) {
+    public init(session: URLSession) {
         self.session = session
     }
     
