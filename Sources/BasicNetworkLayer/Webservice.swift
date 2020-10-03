@@ -11,8 +11,8 @@ import Foundation
 public extension Webservice {
     enum Error: Swift.Error {
         case parsed(Swift.Error)
-        case data
-        case httpStatusCode(Int)
+        case missingData
+        case httpStatusCode(Int, Data?)
         case other(Swift.Error)
     }
 }
@@ -58,13 +58,13 @@ public final class Webservice {
             }
             
             if let httpResponse = response as? HTTPURLResponse, (200..<400).contains(httpResponse.statusCode) == false {
-                completionHandler(.failure(.httpStatusCode(httpResponse.statusCode)))
+                completionHandler(.failure(.httpStatusCode(httpResponse.statusCode, data)))
                 return
             }
             
             guard let data = data else {
                 assertionFailure("data should never be nil without describing error object")
-                completionHandler(.failure(.data))
+                completionHandler(.failure(.missingData))
                 return
             }
             

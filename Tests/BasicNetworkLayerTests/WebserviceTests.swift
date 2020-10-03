@@ -16,14 +16,14 @@ class WebserviceTests: XCTestCase {
         let expectation = XCTestExpectation(description: funcName)
         
         stub(condition: isPath("/\(funcName)")) { _ in
-            HTTPStubsResponse(error: Webservice.Error.data)
+            HTTPStubsResponse(error: Webservice.Error.missingData)
         }
         
         Webservice.shared.load(resource: resource) {
             do {
                 _ = try $0.get()
                 XCTFail("should throw error")
-            } catch Webservice.Error.data {
+            } catch Webservice.Error.missingData {
                 expectation.fulfill()
             } catch {
                 XCTFail("error should be Webservice.Error.data")
@@ -71,8 +71,10 @@ class WebserviceTests: XCTestCase {
                 XCTFail("expected failure")
             case .failure(let error):
                 switch error {
-                case .httpStatusCode(let statusCode):
+                case .httpStatusCode(let statusCode, let data):
                     XCTAssertEqual(statusCode, 401)
+                    XCTAssertNotNil(data)
+                    XCTAssertTrue(data!.isEmpty)
                 default:
                     XCTFail("expected error with status code '401'")
                 }
@@ -98,7 +100,7 @@ class WebserviceTests: XCTestCase {
                 XCTFail("expected failure")
             case .failure(let error):
                 switch error {
-                case .httpStatusCode(let statusCode):
+                case .httpStatusCode(let statusCode, _):
                     XCTAssertEqual(statusCode, 500)
                 default:
                     XCTFail("expected error with status code '500'")
