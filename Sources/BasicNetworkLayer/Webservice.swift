@@ -12,6 +12,7 @@ public extension Webservice {
     enum Error: Swift.Error {
         case parsed(Swift.Error)
         case data
+        case httpStatusCode(Int)
         case other(Swift.Error)
     }
 }
@@ -53,6 +54,11 @@ public final class Webservice {
                     completionHandler(.failure(.other(error)))
                 }
                 
+                return
+            }
+            
+            if let httpResponse = response as? HTTPURLResponse, (200..<400).contains(httpResponse.statusCode) == false {
+                completionHandler(.failure(.httpStatusCode(httpResponse.statusCode)))
                 return
             }
             

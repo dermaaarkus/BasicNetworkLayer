@@ -56,6 +56,60 @@ class WebserviceTests: XCTestCase {
         wait(for: [expectation], timeout: 0.1)
     }
     
+    func testLoadResourceWithUnauthorizedError() {
+        let funcName = "testLoadResourceWithUnauthorizedError"
+        let resource = Resource(url: URL(string: "https://apple.com/\(funcName)")!, parse: { $0 })
+        let expectation = XCTestExpectation(description: funcName)
+        
+        stub(condition: isPath("/\(funcName)")) { _ in
+            HTTPStubsResponse(data: Data(), statusCode: 401, headers: nil)
+        }
+        
+        Webservice.shared.load(resource: resource) {
+            switch $0 {
+            case .success:
+                XCTFail("expected failure")
+            case .failure(let error):
+                switch error {
+                case .httpStatusCode(let statusCode):
+                    XCTAssertEqual(statusCode, 401)
+                default:
+                    XCTFail("expected error with status code '401'")
+                }
+                expectation.fulfill()
+            }
+        }
+        
+        wait(for: [expectation], timeout: 0.1)
+    }
+    
+    func testLoadResourceWithServerError() {
+        let funcName = "testLoadResourceWithServerError"
+        let resource = Resource(url: URL(string: "https://apple.com/\(funcName)")!, parse: { $0 })
+        let expectation = XCTestExpectation(description: funcName)
+        
+        stub(condition: isPath("/\(funcName)")) { _ in
+            HTTPStubsResponse(data: Data(), statusCode: 500, headers: nil)
+        }
+        
+        Webservice.shared.load(resource: resource) {
+            switch $0 {
+            case .success:
+                XCTFail("expected failure")
+            case .failure(let error):
+                switch error {
+                case .httpStatusCode(let statusCode):
+                    XCTAssertEqual(statusCode, 500)
+                default:
+                    XCTFail("expected error with status code '500'")
+                }
+                expectation.fulfill()
+            }
+        }
+        
+        wait(for: [expectation], timeout: 0.1)
+    }
+    
     func testLoadResourceFailParsing() {
         let funcName = "testLoadResourceFailParsing"
         let resource = Resource(url: URL(string: "https://apple.com/\(funcName)")!, parse: { _ in throw TestError.fail })
